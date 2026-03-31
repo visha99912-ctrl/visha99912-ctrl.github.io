@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V Vishal | Web Developer</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple-deep: #0a0010;
+    --purple-dark: #12002a;
+    --purple-mid: #5b00b5;
+    --purple-bright: #9b30ff;
+    --purple-glow: #c77dff;
+    --purple-neon: #e040fb;
+    --cyan-accent: #00e5ff;
+    --text-main: #e8d5ff;
+    --text-dim: #9b7fc4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--purple-deep);
+    color: var(--text-main);
+    font-family: 'Rajdhani', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CURSOR */
+  .cursor {
+    position: fixed; width: 12px; height: 12px;
+    background: var(--purple-neon); border-radius: 50%;
+    pointer-events: none; z-index: 10000;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 12px var(--purple-neon), 0 0 30px var(--purple-bright);
+    transition: transform 0.05s;
+  }
+  .cursor-ring {
+    position: fixed; width: 36px; height: 36px;
+    border: 1.5px solid var(--purple-glow); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: all 0.12s ease; opacity: 0.7;
+  }
+
+  /* GRID BG */
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(155,48,255,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(155,48,255,0.07) 1px, transparent 1px);
+    background-size: 50px 50px; z-index: 0; pointer-events: none;
+  }
+
+  /* SCANLINES */
+  body::after {
+    content: ''; position: fixed; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+    pointer-events: none; z-index: 9000;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.2rem 4rem;
+    background: rgba(10,0,16,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(155,48,255,0.2);
+  }
+  .nav-logo {
+    font-family: 'Orbitron', monospace; font-size: 1.4rem; font-weight: 900;
+    color: var(--purple-glow); letter-spacing: 3px;
+    text-shadow: 0 0 20px var(--purple-bright);
+  }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; align-items: center; }
+  .nav-links a {
+    color: var(--text-dim); text-decoration: none;
+    font-size: 0.95rem; letter-spacing: 2px; text-transform: uppercase;
+    font-weight: 600; transition: color 0.3s, text-shadow 0.3s; cursor: none;
+  }
+  .nav-links a:hover { color: var(--purple-neon); text-shadow: 0 0 12px var(--purple-neon); }
+
+  /* HAMBURGER — only visible on desktop, holds secret admin */
+  .hamburger-wrap { position: relative; }
+  .hamburger-btn {
+    background: none; border: none;
+    display: flex; flex-direction: column; gap: 5px;
+    cursor: none; padding: 6px; border-radius: 4px;
+    transition: background 0.3s;
+  }
+  .hamburger-btn:hover { background: rgba(155,48,255,0.12); }
+  .hamburger-btn span {
+    display: block; width: 22px; height: 2px;
+    background: var(--text-dim); border-radius: 2px;
+    transition: background 0.3s;
+  }
+  .hamburger-btn:hover span { background: var(--purple-glow); }
+
+  .ham-dropdown {
+    display: none; position: absolute; top: calc(100% + 12px); right: 0;
+    background: rgba(10,0,16,0.97); border: 1px solid rgba(155,48,255,0.3);
+    border-radius: 8px; min-width: 180px; overflow: hidden;
+    box-shadow: 0 8px 32px rgba(155,48,255,0.2);
+    backdrop-filter: blur(16px);
+  }
+  .ham-dropdown.open { display: block; animation: dropIn 0.18s ease; }
+  @keyframes dropIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .ham-dropdown button {
+    display: flex; align-items: center; gap: 0.7rem;
+    width: 100%; background: none; border: none; padding: 0.85rem 1.2rem;
+    color: var(--text-dim); font-family: 'Orbitron', monospace;
+    font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase;
+    cursor: none; transition: background 0.2s, color 0.2s; text-align: left;
+  }
+  .ham-dropdown button:hover { background: rgba(155,48,255,0.15); color: var(--purple-glow); }
+  .ham-dropdown button .dd-icon { font-size: 0.85rem; }
+
+  /* HERO */
+  #hero {
+    position: relative; min-height: 100vh;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5rem; overflow: hidden; z-index: 1;
+  }
+  .hero-text { flex: 1; z-index: 2; }
+  .hero-tag {
+    font-size: 0.8rem; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--cyan-accent); margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 0.8rem;
+  }
+  .hero-tag::before {
+    content: ''; width: 40px; height: 1px;
+    background: var(--cyan-accent); box-shadow: 0 0 8px var(--cyan-accent);
+  }
+  h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 900; line-height: 1.05; margin-bottom: 0.3rem;
+  }
+  .name-highlight {
+    background: linear-gradient(135deg, var(--purple-glow), var(--purple-neon), var(--cyan-accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    display: block; filter: drop-shadow(0 0 20px rgba(199,125,255,0.5));
+  }
+  .hero-role { font-size: 1.3rem; color: var(--text-dim); letter-spacing: 3px; margin: 1.2rem 0 2rem; text-transform: uppercase; }
+  .hero-desc { max-width: 480px; color: var(--text-dim); font-size: 1.05rem; line-height: 1.8; margin-bottom: 2.5rem; }
+  .btn-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .btn-primary {
+    padding: 0.85rem 2.2rem;
+    background: linear-gradient(135deg, var(--purple-mid), var(--purple-neon));
+    color: #fff; border: none; border-radius: 4px;
+    font-family: 'Orbitron', monospace; font-size: 0.8rem; letter-spacing: 2px;
+    cursor: none; text-decoration: none; text-transform: uppercase; display: inline-block;
+    box-shadow: 0 0 24px rgba(155,48,255,0.5); transition: box-shadow 0.3s, transform 0.2s;
+  }
+  .btn-primary:hover { box-shadow: 0 0 40px rgba(224,64,251,0.7); transform: translateY(-2px); }
+  .btn-outline {
+    padding: 0.85rem 2.2rem; border: 1px solid var(--purple-bright);
+    color: var(--purple-glow); background: transparent; border-radius: 4px;
+    font-family: 'Orbitron', monospace; font-size: 0.8rem; letter-spacing: 2px;
+    cursor: none; text-decoration: none; text-transform: uppercase; display: inline-block;
+    transition: background 0.3s, box-shadow 0.3s;
+  }
+  .btn-outline:hover { background: rgba(155,48,255,0.15); box-shadow: 0 0 20px rgba(155,48,255,0.4); }
+
+  /* ROBOT CONTAINER */
+  .robot-container {
+    flex: 0 0 420px; height: 520px; position: relative;
+    display: flex; align-items: center; justify-content: center; z-index: 2;
+  }
+  .robot-svg {
+    width: 300px; height: 480px;
+    filter: drop-shadow(0 0 30px rgba(155,48,255,0.6));
+    transition: transform 0.08s ease-out; transform-origin: center 20%;
+  }
+  .robot-glow {
+    position: absolute; width: 340px; height: 340px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(155,48,255,0.18) 0%, transparent 70%);
+    animation: pulseGlow 3s ease-in-out infinite;
+  }
+  @keyframes pulseGlow { 0%,100%{transform:scale(1);opacity:.7} 50%{transform:scale(1.1);opacity:1} }
+  .orbit {
+    position: absolute; border-radius: 50%;
+    border: 1px solid rgba(155,48,255,0.2); animation: orbit-spin linear infinite;
+  }
+  .orbit-1 { width: 380px; height: 380px; animation-duration: 10s; border-color: rgba(155,48,255,0.25); }
+  .orbit-2 { width: 460px; height: 460px; animation-duration: 16s; animation-direction: reverse; border-color: rgba(0,229,255,0.15); }
+  .orbit-dot {
+    position: absolute; top: -4px; left: 50%; width: 8px; height: 8px;
+    background: var(--purple-neon); border-radius: 50%;
+    box-shadow: 0 0 10px var(--purple-neon); transform: translateX(-50%);
+  }
+  .orbit-2 .orbit-dot { background: var(--cyan-accent); box-shadow: 0 0 10px var(--cyan-accent); }
+  @keyframes orbit-spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+  .stat-chip {
+    position: absolute; background: rgba(18,0,42,0.9); border: 1px solid rgba(155,48,255,0.35);
+    border-radius: 8px; padding: 0.6rem 1rem; font-family: 'Orbitron', monospace;
+    font-size: 0.7rem; backdrop-filter: blur(8px); box-shadow: 0 0 16px rgba(155,48,255,0.2);
+    animation: floatChip 4s ease-in-out infinite;
+  }
+  .stat-chip .val { color: var(--purple-neon); font-size: 1.1rem; font-weight: 700; display: block; }
+  .stat-chip .lbl { color: var(--text-dim); letter-spacing: 1px; }
+  .chip-1 { top: 60px; left: -30px; animation-delay: 0s; }
+  .chip-2 { top: 60px; right: -30px; animation-delay: 1s; }
+  .chip-3 { bottom: 80px; left: -20px; animation-delay: 2s; }
+  @keyframes floatChip { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+  /* SECTIONS */
+  section { position: relative; z-index: 1; padding: 6rem 5rem; }
+  .section-header { text-align: center; margin-bottom: 4rem; }
+  .section-tag { font-size: 0.75rem; letter-spacing: 4px; color: var(--cyan-accent); text-transform: uppercase; display: block; margin-bottom: 0.8rem; }
+  .section-title {
+    font-family: 'Orbitron', monospace; font-size: clamp(1.8rem,3vw,2.8rem); font-weight: 900;
+    background: linear-gradient(135deg, #fff, var(--purple-glow));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .section-line { width: 80px; height: 2px; background: linear-gradient(90deg,var(--purple-mid),var(--purple-neon)); margin: 1.2rem auto 0; box-shadow: 0 0 10px var(--purple-bright); }
+
+  /* ABOUT */
+  #about { background: rgba(18,0,42,0.4); }
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; max-width: 1100px; margin: 0 auto; }
+  .about-text { font-size: 1.05rem; line-height: 1.9; color: var(--text-dim); }
+  .about-text p { margin-bottom: 1.2rem; }
+  .edu-card {
+    background: rgba(91,0,181,0.12); border: 1px solid rgba(155,48,255,0.25);
+    border-radius: 10px; padding: 1.5rem; margin-bottom: 1rem;
+    display: flex; gap: 1rem; align-items: flex-start; transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .edu-card:hover { border-color: var(--purple-bright); box-shadow: 0 0 20px rgba(155,48,255,0.2); }
+  .edu-icon { font-size: 1.8rem; min-width: 42px; text-align: center; }
+  .edu-title { font-family: 'Orbitron', monospace; font-size: 0.9rem; color: var(--purple-glow); margin-bottom: 0.3rem; }
+  .edu-sub { color: var(--text-dim); font-size: 0.88rem; }
+
+  /* SKILLS */
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); gap: 1.5rem; max-width: 1000px; margin: 0 auto; }
+  .skill-card {
+    background: rgba(18,0,42,0.7); border: 1px solid rgba(155,48,255,0.2); border-radius: 12px;
+    padding: 1.8rem 1rem; text-align: center; cursor: none;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+  }
+  .skill-card:hover { transform: translateY(-6px); border-color: var(--purple-neon); box-shadow: 0 0 30px rgba(224,64,251,0.25); }
+  .skill-icon { font-size: 2.2rem; margin-bottom: 0.8rem; display: block; }
+  .skill-name { font-family: 'Orbitron', monospace; font-size: 0.72rem; letter-spacing: 1.5px; color: var(--purple-glow); text-transform: uppercase; }
+
+  /* PROJECTS */
+  #projects { background: rgba(18,0,42,0.4); }
+  .projects-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(320px,1fr)); gap: 2rem; max-width: 1200px; margin: 0 auto; }
+  .project-card {
+    background: rgba(12,0,26,0.9); border: 1px solid rgba(155,48,255,0.2); border-radius: 14px;
+    overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; cursor: none;
+  }
+  .project-card:hover { transform: translateY(-8px); box-shadow: 0 16px 50px rgba(155,48,255,0.3); border-color: var(--purple-bright); }
+  .project-thumb { height: 180px; display: flex; align-items: center; justify-content: center; font-size: 4rem; position: relative; overflow: hidden; }
+  .project-thumb::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 40%, rgba(12,0,26,0.9)); }
+  .project-body { padding: 1.5rem; }
+  .project-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.8rem; }
+  .tag { background: rgba(91,0,181,0.3); border: 1px solid rgba(155,48,255,0.3); border-radius: 4px; padding: 0.2rem 0.6rem; font-size: 0.7rem; color: var(--purple-glow); letter-spacing: 1px; text-transform: uppercase; }
+  .project-title { font-family: 'Orbitron', monospace; font-size: 1rem; color: #fff; margin-bottom: 0.6rem; }
+  .project-desc { color: var(--text-dim); font-size: 0.92rem; line-height: 1.7; }
+
+  /* CLIENTS */
+  .clients-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap: 1.5rem; max-width: 1100px; margin: 0 auto; }
+  .client-card {
+    background: rgba(18,0,42,0.8); border: 1px solid rgba(155,48,255,0.2); border-radius: 12px;
+    padding: 1.8rem; transition: box-shadow 0.3s, border-color 0.3s; cursor: none;
+  }
+  .client-card:hover { box-shadow: 0 0 24px rgba(155,48,255,0.2); border-color: var(--purple-bright); }
+  .client-avatar { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg,var(--purple-mid),var(--purple-neon)); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 1rem; box-shadow: 0 0 16px rgba(155,48,255,0.4); }
+  .client-name { font-family: 'Orbitron', monospace; font-size: 0.85rem; color: var(--purple-glow); margin-bottom: 0.2rem; }
+  .client-company { color: var(--text-dim); font-size: 0.8rem; margin-bottom: 1rem; }
+  .stars { color: var(--purple-neon); margin-bottom: 0.8rem; font-size: 0.9rem; }
+  .client-review { color: var(--text-dim); font-size: 0.9rem; line-height: 1.7; font-style: italic; }
+
+  /* CONTACT */
+  #contact { background: rgba(18,0,42,0.4); text-align: center; }
+  .contact-inner { max-width: 600px; margin: 0 auto; }
+  .contact-inner p { color: var(--text-dim); font-size: 1.05rem; line-height: 1.8; margin-bottom: 2rem; }
+
+  footer { text-align: center; padding: 2rem; border-top: 1px solid rgba(155,48,255,0.15); color: var(--text-dim); font-size: 0.85rem; letter-spacing: 2px; position: relative; z-index: 1; }
+  footer span { color: var(--purple-neon); }
+
+  /* ====== OVERLAY PAGES ====== */
+  .overlay-page {
+    display: none; position: fixed; inset: 0; z-index: 5000;
+    background: var(--purple-deep); overflow-y: auto;
+  }
+  .overlay-page.active { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+
+  /* CONTACT FORM */
+  .contact-form-wrap { width: 100%; max-width: 520px; margin: 0 auto; padding: 3rem 2rem; }
+  .back-btn {
+    background: none; border: none; color: var(--text-dim);
+    font-family: 'Orbitron', monospace; font-size: 0.7rem; letter-spacing: 2px;
+    cursor: none; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.5rem;
+    transition: color 0.3s; text-transform: uppercase;
+  }
+  .back-btn:hover { color: var(--purple-neon); }
+  .form-title {
+    font-family: 'Orbitron', monospace; font-size: 1.8rem; font-weight: 900;
+    background: linear-gradient(135deg, var(--purple-glow), var(--purple-neon));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 0.5rem;
+  }
+  .form-sub { color: var(--text-dim); font-size: 0.95rem; margin-bottom: 2rem; line-height: 1.6; }
+  .form-group { margin-bottom: 1.5rem; }
+  .form-group label { display: block; font-family: 'Orbitron', monospace; font-size: 0.7rem; letter-spacing: 2px; color: var(--purple-glow); margin-bottom: 0.5rem; text-transform: uppercase; }
+  .form-group input {
+    width: 100%; background: rgba(18,0,42,0.8); border: 1px solid rgba(155,48,255,0.3);
+    border-radius: 6px; padding: 0.9rem 1.2rem; color: var(--text-main);
+    font-family: 'Rajdhani', sans-serif; font-size: 1rem; outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s; cursor: none;
+  }
+  .form-group input:focus { border-color: var(--purple-neon); box-shadow: 0 0 16px rgba(224,64,251,0.2); }
+  .form-group input::placeholder { color: var(--text-dim); opacity: 0.7; }
+  .form-or { text-align: center; color: var(--text-dim); margin: 0.5rem 0 1.5rem; font-size: 0.85rem; letter-spacing: 2px; }
+  .form-note { color: var(--text-dim); font-size: 0.82rem; margin-bottom: 1.5rem; }
+  .form-note span { color: var(--purple-neon); }
+  .field-error { display: none; background: rgba(255,50,50,0.1); border: 1px solid rgba(255,80,80,0.4); border-radius: 6px; padding: 0.7rem 1rem; color: #ff8080; font-size: 0.85rem; margin-bottom: 1.2rem; text-align: center; }
+  .form-success { display: none; text-align: center; padding: 2rem; }
+  .form-success .success-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .form-success h3 { font-family: 'Orbitron', monospace; color: var(--purple-glow); margin-bottom: 0.5rem; }
+
+  /* ADMIN LOGIN */
+  .admin-login-wrap { width: 100%; max-width: 420px; margin: 0 auto; padding: 3rem 2rem; }
+  .admin-header { text-align: center; margin-bottom: 2.5rem; }
+  .admin-badge { display: inline-block; background: rgba(224,64,251,0.15); border: 1px solid rgba(224,64,251,0.4); border-radius: 4px; padding: 0.3rem 1rem; font-family: 'Orbitron', monospace; font-size: 0.65rem; letter-spacing: 3px; color: var(--purple-neon); margin-bottom: 1.2rem; text-transform: uppercase; }
+  .admin-login-title { font-family: 'Orbitron', monospace; font-size: 1.6rem; font-weight: 900; color: var(--purple-glow); margin-bottom: 0.4rem; }
+  .admin-login-sub { color: var(--text-dim); font-size: 0.9rem; }
+  .login-card { background: rgba(18,0,42,0.9); border: 1px solid rgba(155,48,255,0.3); border-radius: 14px; padding: 2rem; box-shadow: 0 0 40px rgba(155,48,255,0.15); }
+  .login-btn { width: 100%; padding: 0.9rem; background: linear-gradient(135deg,var(--purple-mid),var(--purple-neon)); color: #fff; border: none; border-radius: 6px; font-family: 'Orbitron', monospace; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; cursor: none; box-shadow: 0 0 24px rgba(155,48,255,0.4); transition: box-shadow 0.3s, transform 0.2s; margin-top: 0.5rem; }
+  .login-btn:hover { box-shadow: 0 0 40px rgba(224,64,251,0.6); transform: translateY(-1px); }
+  .login-back { display: block; text-align: center; margin-top: 1.5rem; color: var(--text-dim); font-size: 0.85rem; cursor: none; background: none; border: none; letter-spacing: 1px; transition: color 0.3s; width: 100%; }
+  .login-back:hover { color: var(--purple-glow); }
+
+  /* ADMIN DASHBOARD */
+  #adminDashboard { display: none; position: fixed; inset: 0; z-index: 6000; background: var(--purple-deep); overflow-y: auto; }
+  #adminDashboard.active { display: block; }
+  .admin-topbar { background: rgba(10,0,16,0.95); border-bottom: 1px solid rgba(155,48,255,0.3); padding: 1rem 2.5rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(16px); }
+  .admin-topbar-left { display: flex; align-items: center; gap: 1rem; }
+  .admin-topbar-logo { font-family: 'Orbitron', monospace; font-size: 1rem; color: var(--purple-glow); letter-spacing: 3px; font-weight: 900; }
+  .admin-topbar-tag { background: rgba(224,64,251,0.15); border: 1px solid rgba(224,64,251,0.4); border-radius: 4px; padding: 0.2rem 0.7rem; font-family: 'Orbitron', monospace; font-size: 0.6rem; letter-spacing: 2px; color: var(--purple-neon); text-transform: uppercase; }
+  .admin-logout-btn { background: none; border: 1px solid rgba(255,80,80,0.4); color: #ff8080; padding: 0.4rem 1.2rem; border-radius: 4px; font-family: 'Orbitron', monospace; font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; cursor: none; transition: all 0.3s; }
+  .admin-logout-btn:hover { background: rgba(255,80,80,0.1); box-shadow: 0 0 12px rgba(255,80,80,0.3); }
+  .admin-body { padding: 2.5rem; }
+  .admin-stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; margin-bottom: 2.5rem; }
+  .admin-stat-card { background: rgba(18,0,42,0.8); border: 1px solid rgba(155,48,255,0.25); border-radius: 12px; padding: 1.5rem; text-align: center; }
+  .admin-stat-val { font-family: 'Orbitron', monospace; font-size: 2.2rem; font-weight: 900; color: var(--purple-neon); display: block; text-shadow: 0 0 20px rgba(224,64,251,0.5); }
+  .admin-stat-lbl { color: var(--text-dim); font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; margin-top: 0.3rem; display: block; }
+  .admin-section-title { font-family: 'Orbitron', monospace; font-size: 0.9rem; letter-spacing: 3px; color: var(--purple-glow); text-transform: uppercase; margin-bottom: 1.2rem; padding-bottom: 0.6rem; border-bottom: 1px solid rgba(155,48,255,0.2); display: flex; align-items: center; gap: 0.8rem; }
+  .admin-section-title::before { content: ''; width: 4px; height: 16px; background: var(--purple-neon); border-radius: 2px; box-shadow: 0 0 8px var(--purple-neon); }
+  .clear-all-btn { background: none; border: 1px solid rgba(255,80,80,0.3); color: rgba(255,80,80,0.7); padding: 0.45rem 1.2rem; border-radius: 4px; font-family: 'Orbitron', monospace; font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; cursor: none; transition: all 0.3s; float: right; margin-top: -2rem; margin-bottom: 1rem; }
+  .clear-all-btn:hover { background: rgba(255,80,80,0.1); color: #ff8080; }
+  .contacts-table-wrap { overflow-x: auto; }
+  .contacts-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+  .contacts-table thead tr { background: rgba(91,0,181,0.2); border-bottom: 1px solid rgba(155,48,255,0.3); }
+  .contacts-table th { font-family: 'Orbitron', monospace; font-size: 0.65rem; letter-spacing: 2px; color: var(--purple-glow); text-transform: uppercase; padding: 1rem 1.2rem; text-align: left; }
+  .contacts-table td { padding: 0.9rem 1.2rem; color: var(--text-dim); border-bottom: 1px solid rgba(155,48,255,0.08); vertical-align: middle; }
+  .contacts-table tbody tr:hover { background: rgba(155,48,255,0.06); }
+  .contact-row-name { color: var(--text-main); font-weight: 600; }
+  .contact-row-badge { display: inline-block; background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.3); border-radius: 4px; padding: 0.15rem 0.6rem; font-size: 0.7rem; color: var(--cyan-accent); letter-spacing: 1px; }
+  .contact-row-badge.phone { background: rgba(224,64,251,0.1); border-color: rgba(224,64,251,0.3); color: var(--purple-neon); }
+  .contact-time { font-size: 0.8rem; color: var(--text-dim); opacity: 0.7; }
+  .delete-btn { background: none; border: 1px solid rgba(255,80,80,0.3); color: rgba(255,80,80,0.7); border-radius: 4px; padding: 0.25rem 0.7rem; font-size: 0.75rem; cursor: none; transition: all 0.3s; letter-spacing: 1px; }
+  .delete-btn:hover { background: rgba(255,80,80,0.1); color: #ff8080; }
+  .no-contacts { text-align: center; padding: 3rem; color: var(--text-dim); }
+  .no-contacts .nc-icon { font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.5; }
+  .no-contacts p { font-family: 'Orbitron', monospace; font-size: 0.8rem; letter-spacing: 2px; opacity: 0.6; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    nav { padding: 1rem 2rem; }
+    .nav-links { gap: 1.5rem; }
+    .nav-links li:not(:last-child) a { display: none; }
+    #hero { flex-direction: column; padding: 7rem 2rem 3rem; gap: 3rem; }
+    section { padding: 4rem 2rem; }
+    .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .robot-container { width: 300px; height: 380px; }
+    .robot-svg { width: 220px; height: 360px; }
+    .orbit-1 { width: 280px; height: 280px; }
+    .orbit-2 { width: 340px; height: 340px; }
+    .admin-stats-row { grid-template-columns: 1fr; }
+    .admin-body { padding: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ===== MAIN PORTFOLIO ===== -->
+<div id="mainSite">
+
+<nav>
+  <div class="nav-logo">V·VISHAL</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#clients">Clients</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <!-- HAMBURGER — hides admin login inside -->
+    <li class="hamburger-wrap">
+      <button class="hamburger-btn" id="hamBtn" onclick="toggleHamMenu()" title="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="ham-dropdown" id="hamMenu">
+        <button onclick="closeHamMenu(); showAdminLogin()"><span class="dd-icon">⚙</span> Admin Login</button>
+      </div>
+    </li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-text">
+    <div class="hero-tag">Web Developer & Designer</div>
+    <h1>Hello, I'm<br><span class="name-highlight">V VISHAL</span></h1>
+    <p class="hero-role">// Full Stack Web Developer</p>
+    <p class="hero-desc">Crafting immersive digital experiences from Tamil Nadu, India. I build high-performance websites and web applications that leave a lasting impression on every visitor.</p>
+    <div class="btn-row">
+      <a href="#projects" class="btn-primary">View Projects</a>
+      <a href="#contact" class="btn-outline">Hire Me</a>
+    </div>
+  </div>
+
+  <!-- HUMANOID ROBOT -->
+  <div class="robot-container">
+    <div class="robot-glow"></div>
+    <div class="orbit orbit-1"><div class="orbit-dot"></div></div>
+    <div class="orbit orbit-2"><div class="orbit-dot"></div></div>
+    <div class="stat-chip chip-1"><span class="val">15+</span><span class="lbl">PROJECTS</span></div>
+    <div class="stat-chip chip-2"><span class="val">10+</span><span class="lbl">CLIENTS</span></div>
+    <div class="stat-chip chip-3"><span class="val">2+</span><span class="lbl">YRS EXP</span></div>
+
+    <!-- HUMANOID SVG — smooth curves, anatomical proportions -->
+    <svg class="robot-svg" id="robot" viewBox="0 0 200 380" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="skinGrad" cx="50%" cy="40%" r="60%">
+          <stop offset="0%" style="stop-color:#3a0080"/>
+          <stop offset="100%" style="stop-color:#0d001f"/>
+        </radialGradient>
+        <radialGradient id="faceGrad" cx="50%" cy="35%" r="65%">
+          <stop offset="0%" style="stop-color:#4a00a0"/>
+          <stop offset="100%" style="stop-color:#1a0040"/>
+        </radialGradient>
+        <linearGradient id="chestGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#2a0060"/>
+          <stop offset="100%" style="stop-color:#080018"/>
+        </linearGradient>
+        <linearGradient id="limbGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#250055"/>
+          <stop offset="100%" style="stop-color:#0a0020"/>
+        </linearGradient>
+        <linearGradient id="glowLine" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#9b30ff;stop-opacity:0"/>
+          <stop offset="50%" style="stop-color:#e040fb"/>
+          <stop offset="100%" style="stop-color:#9b30ff;stop-opacity:0"/>
+        </linearGradient>
+        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="2.5" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="strongGlow" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="4" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="1.5" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      <!-- ═══ LEGS ═══ -->
+      <!-- Left thigh — tapered cylinder shape -->
+      <path d="M82,248 C78,252 75,268 76,292 C76,298 80,302 85,302 C90,302 93,298 93,292 C93,268 91,252 88,248 Z" fill="url(#limbGrad)" stroke="#5b00b5" stroke-width="1"/>
+      <!-- Left knee cap -->
+      <ellipse cx="84.5" cy="295" rx="8" ry="6" fill="#1a003a" stroke="#7b20d5" stroke-width="1"/>
+      <ellipse cx="84.5" cy="295" rx="4" ry="3" fill="#9b30ff" opacity="0.5" filter="url(#softGlow)"/>
+      <!-- Left shin -->
+      <path d="M78,300 C76,305 75,325 76,345 C76,350 80,353 85,353 C90,353 93,350 93,345 C93,325 91,305 90,300 Z" fill="url(#limbGrad)" stroke="#5b00b5" stroke-width="1"/>
+      <!-- Left foot — rounded boot shape -->
+      <path d="M72,348 C70,350 68,358 72,362 C76,366 96,366 100,362 C102,358 100,350 98,348 Z" fill="#1a003a" stroke="#5b00b5" stroke-width="1"/>
+      <path d="M73,352 C73,354 74,360 86,360 C90,360 96,358 97,354" fill="none" stroke="#9b30ff" stroke-width="0.5" opacity="0.6"/>
+
+      <!-- Right thigh -->
+      <path d="M112,248 C109,252 107,268 107,292 C107,298 110,302 115,302 C120,302 124,298 124,292 C124,268 122,252 118,248 Z" fill="url(#limbGrad)" stroke="#5b00b5" stroke-width="1"/>
+      <!-- Right knee cap -->
+      <ellipse cx="115.5" cy="295" rx="8" ry="6" fill="#1a003a" stroke="#7b20d5" stroke-width="1"/>
+      <ellipse cx="115.5" cy="295" rx="4" ry="3" fill="#9b30ff" opacity="0.5" filter="url(#softGlow)"/>
+      <!-- Right shin -->
+      <path d="M110,300 C109,305 107,325 107,345 C107,350 111,353 115,353 C120,353 124,350 124,345 C124,325 123,305 122,300 Z" fill="url(#limbGrad)" stroke="#5b00b5" stroke-width="1"/>
+      <!-- Right foot -->
+      <path d="M100,348 C98,350 98,358 102,362 C106,366 126,366 128,362 C130,358 128,350 128,348 Z" fill="#1a003a" stroke="#5b00b5" stroke-width="1"/>
+      <path d="M103,352 C103,354 104,360 114,360 C118,360 124,358 126,354" fill="none" stroke="#9b30ff" stroke-width="0.5" opacity="0.6"/>
+
+      <!-- ═══ HIPS / PELVIS ═══ -->
+      <path d="M72,235 C70,240 70,250 75,252 C82,254 118,254 125,252 C130,250 130,240 128,235 C120,232 80,232 72,235 Z" fill="url(#chestGrad)" stroke="#5b00b5" stroke-width="1"/>
+      <!-- Hip accent line -->
+      <path d="M78,240 Q100,244 122,240" fill="none" stroke="url(#glowLine)" stroke-width="1.5" opacity="0.7"/>
+
+      <!-- ═══ TORSO ═══ -->
+      <!-- Main torso — wider shoulders, narrower waist -->
+      <path d="M58,130 C52,135 50,155 50,170 C50,185 52,200 54,215 C56,228 70,235 100,235 C130,235 144,228 146,215 C148,200 150,185 150,170 C150,155 148,135 142,130 C130,125 70,125 58,130 Z" fill="url(#chestGrad)" stroke="#5b00b5" stroke-width="1.2"/>
+
+      <!-- Chest plate detail — curved panel -->
+      <path d="M68,138 C64,142 62,158 62,170 C62,180 64,190 66,198 C70,205 100,208 134,198 C136,190 138,180 138,170 C138,158 136,142 132,138 C120,134 80,134 68,138 Z" fill="#0d0025" stroke="#3d0080" stroke-width="0.8" opacity="0.8"/>
+
+      <!-- Chest top glow strip -->
+      <path d="M72,138 Q100,136 128,138" fill="none" stroke="url(#glowLine)" stroke-width="2" opacity="0.8"/>
+
+      <!-- Core reactor — glowing heart -->
+      <circle cx="100" cy="170" r="20" fill="#08001a" stroke="#5b00b5" stroke-width="1.5"/>
+      <circle cx="100" cy="170" r="14" fill="#10002e" stroke="#7b20d5" stroke-width="1"/>
+      <circle cx="100" cy="170" r="9" fill="#180038"/>
+      <circle cx="100" cy="170" r="5.5" fill="#9b30ff" filter="url(#strongGlow)">
+        <animate attributeName="r" values="5.5;7;5.5" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="1;0.7;1" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="100" cy="170" r="2" fill="#fff"/>
+      <!-- Reactor spinning ring -->
+      <circle cx="100" cy="170" r="17" fill="none" stroke="#e040fb" stroke-width="0.6" stroke-dasharray="5 4" opacity="0.5">
+        <animateTransform attributeName="transform" type="rotate" from="0 100 170" to="360 100 170" dur="5s" repeatCount="indefinite"/>
+      </circle>
+
+      <!-- Chest rib lines -->
+      <path d="M72,148 Q100,146 128,148" fill="none" stroke="#5b00b5" stroke-width="0.6" opacity="0.5"/>
+      <path d="M70,156 Q100,154 130,156" fill="none" stroke="#5b00b5" stroke-width="0.6" opacity="0.4"/>
+      <path d="M70,190 Q100,188 130,190" fill="none" stroke="#5b00b5" stroke-width="0.6" opacity="0.4"/>
+      <path d="M72,200 Q100,198 128,200" fill="none" stroke="#5b00b5" stroke-width="0.6" opacity="0.3"/>
+
+      <!-- Side accent dots -->
+      <circle cx="62" cy="162" r="2.5" fill="#e040fb" opacity="0.8" filter="url(#softGlow)"/>
+      <circle cx="62" cy="172" r="2.5" fill="#9b30ff" opacity="0.6"/>
+      <circle cx="62" cy="182" r="2.5" fill="#e040fb" opacity="0.4"/>
+      <circle cx="138" cy="162" r="2.5" fill="#e040fb" opacity="0.8" filter="url(#softGlow)"/>
+      <circle cx="138" cy="172" r="2.5" fill="#9b30ff" opacity="0.6"/>
+      <circle cx="138" cy="182" r="2.5" fill="#e040fb" opacity="0.4"/>
+
+      <!-- ═══ SHOULDERS ═══ -->
+      <!-- Left shoulder — rounded pauldron -->
+      <path d="M34,120 C26,124 22,134 24,148 C26,158 32,164 42,164 C50,164 56,158 58,148 C60,138 56,126 50,122 C44,118 38,118 34,120 Z" fill="url(#skinGrad)" stroke="#7b20d5" stroke-width="1.2"/>
+      <path d="M30,130 Q40,126 52,132" fill="none" stroke="url(#glowLine)" stroke-width="1.5" opacity="0.6"/>
+      <!-- Right shoulder -->
+      <path d="M166,120 C158,118 150,118 150,122 C144,126 140,138 142,148 C144,158 150,164 158,164 C168,164 174,158 176,148 C178,134 174,124 166,120 Z" fill="url(#skinGrad)" stroke="#7b20d5" stroke-width="1.2"/>
+      <path d="M148,132 Q160,126 170,130" fill="none" stroke="url(#glowLine)" stroke-width="1.5" opacity="0.6"/>
+
+      <!-- ═══ ARMS ═══ -->
+      <!-- Left upper arm — tapered cylinder -->
+      <path d="M24,148 C20,154 18,170 20,188 C20,196 26,200 34,200 C42,200 48,196 48,188 C48,170 46,154 42,148 Z" fill="url(#limbGrad)" stroke="#5b00b5" stroke-width="1"/>
+      <!-- Left elbow joint -->
+      <ellipse cx="34" cy="200" rx="12" ry="9" fill="#1a003a" stroke="#7b20d5" stroke-width="1"/>
+      <ellipse cx="34" cy="200" rx="5" ry="4" fill="#9b30ff" opacity="0.5" filter="url(#softGlow)"/>
+      <!-- Left forearm -->
+      <path d="M22,205 C20,212 20,232 22,248 C22,254 28,258 34,258 C40,258 46,254 46,248 C46,232 46,212 44,205 Z" fill="url(#limbGrad)" stroke="#5b00b5" stroke-width="1"/>
+      <!-- Left forearm tech strip -->
+      <path d="M24,218 Q34,216 44,218" fill="none" stroke="#5b00b5" stroke-width="0.7" opacity="0.6"/>
+      <path d="M24,226 Q34,224 44,226" fill="none" stroke="#5b00b5" stroke-width="0.7" opacity="0.4"/>
+      <!-- Left hand — rounded -->
+      <path d="M20,250 C18,254 18,266 22,270 C24,272 30,274 36,272 C40,270 48,268 48,262 C48,256 46,252 44,250 Z" fill="#180038" stroke="#5b00b5" stroke-width="1"/>
+      <!-- Left fingers -->
+      <path d="M22,262 C20,264 20,272 22,274 C24,276 26,274 26,272 L26,262 Z" fill="#130030" stroke="#5b00b5" stroke-width="0.7" rx="3"/>
+      <path d="M28,260 C26,262 26,274 28,276 C30,278 33,276 33,274 L33,260 Z" fill="#130030" stroke="#5b00b5" stroke-width="0.7"/>
+      <path d="M35,260 C33,262 33,274 35,276 C37,278 40,276 40,274 L40,260 Z" fill="#130030" stroke="#5b00b5" stroke-width="0.7"/>
+      <path d="M42,262 C40,264 40,272 42,274 C44,276 46,274 46,272 L46,262 Z" fill="#130030" stroke="#5b00b5" stroke-width="0.7"/>
+
+      <!-- Right upper arm -->
+      <path d="M158,148 C154,154 152,170 152,188 C152,196 158,200 166,200 C174,200 180,196 180,188 C180,170 178,154 176,148 Z" fill="url(#limbGrad)" stroke="#5b00b5" stroke-width="1"/>
+      <!-- Right elbow joint -->
+      <ellipse cx="166" cy="200" rx="12" ry="9" fill="#1a003a" stroke="#7b20d5" stroke-width="1"/>
+      <ellipse cx="166" cy="200" rx="5" ry="4" fill="#9b30ff" opacity="0.5" filter="url(#softGlow)"/>
+      <!-- Right forearm -->
+      <path d="M154,205 C152,212 152,232 154,248 C154,254 160,258 166,258 C172,258 178,254 178,248 C178,232 178,212 176,205 Z" fill="url(#limbGrad)" stroke="#5b00b5" stroke-width="1"/>
+      <!-- Right forearm tech strip -->
+      <path d="M154,218 Q166,216 178,218" fill="none" stroke="#5b00b5" stroke-width="0.7" opacity="0.6"/>
+      <path d="M154,226 Q166,224 178,226" fill="none" stroke="#5b00b5" stroke-width="0.7" opacity="0.4"/>
+      <!-- Right hand -->
+      <path d="M152,250 C150,252 150,262 152,268 C154,272 162,274 166,272 C172,270 182,266 182,260 C182,254 180,252 178,250 Z" fill="#180038" stroke="#5b00b5" stroke-width="1"/>
+      <!-- Right fingers -->
+      <path d="M154,262 C152,264 152,272 154,274 C156,276 158,274 158,272 L158,262 Z" fill="#130030" stroke="#5b00b5" stroke-width="0.7"/>
+      <path d="M160,260 C158,262 158,274 160,276 C162,278 165,276 165,274 L165,260 Z" fill="#130030" stroke="#5b00b5" stroke-width="0.7"/>
+      <path d="M167,260 C165,262 165,274 167,276 C169,278 172,276 172,274 L167,260 Z" fill="#130030" stroke="#5b00b5" stroke-width="0.7"/>
+      <path d="M174,262 C172,264 172,272 174,274 C176,276 178,274 178,272 L174,262 Z" fill="#130030" stroke="#5b00b5" stroke-width="0.7"/>
+
+      <!-- ═══ NECK ═══ -->
+      <path d="M88,108 C86,110 85,118 86,126 C87,130 92,132 100,132 C108,132 113,130 114,126 C115,118 114,110 112,108 C108,106 92,106 88,108 Z" fill="url(#skinGrad)" stroke="#5b00b5" stroke-width="1"/>
+      <!-- Neck circuit lines -->
+      <path d="M91,114 Q100,112 109,114" fill="none" stroke="#9b30ff" stroke-width="0.6" opacity="0.5"/>
+      <path d="M91,119 Q100,117 109,119" fill="none" stroke="#9b30ff" stroke-width="0.6" opacity="0.3"/>
+
+      <!-- ═══ HEAD ═══ -->
+      <!-- Main head shape — human proportions, slightly wider cheekbones -->
+      <path d="M62,55 C58,60 56,72 56,82 C56,96 60,108 68,114 C76,118 84,120 100,120 C116,120 124,118 132,114 C140,108 144,96 144,82 C144,72 142,60 138,55 C130,46 70,46 62,55 Z" fill="url(#faceGrad)" stroke="#7b20d5" stroke-width="1.2"/>
+
+      <!-- Temples / side panels -->
+      <path d="M56,68 C52,72 50,82 52,90 C54,96 58,100 62,100 C64,98 62,86 62,80 C62,72 62,64 64,60 Z" fill="#1a003a" stroke="#5b00b5" stroke-width="0.8" opacity="0.8"/>
+      <path d="M138,60 C140,64 138,72 138,80 C138,86 136,98 138,100 C142,100 146,96 148,90 C150,82 148,72 144,68 Z" fill="#1a003a" stroke="#5b00b5" stroke-width="0.8" opacity="0.8"/>
+
+      <!-- Temple accent lights -->
+      <circle cx="55" cy="80" r="3" fill="#e040fb" opacity="0.8" filter="url(#softGlow)"/>
+      <circle cx="145" cy="80" r="3" fill="#e040fb" opacity="0.8" filter="url(#softGlow)"/>
+
+      <!-- Ear shapes — small rounded lobes -->
+      <ellipse cx="56" cy="85" rx="5" ry="7" fill="#1a003a" stroke="#5b00b5" stroke-width="0.8"/>
+      <ellipse cx="144" cy="85" rx="5" ry="7" fill="#1a003a" stroke="#5b00b5" stroke-width="0.8"/>
+      <circle cx="56" cy="85" r="2" fill="#9b30ff" opacity="0.4"/>
+      <circle cx="144" cy="85" r="2" fill="#9b30ff" opacity="0.4"/>
+
+      <!-- HAIR / HEAD TOP — tech mohawk style -->
+      <path d="M72,46 C76,34 84,28 100,26 C116,28 124,34 128,46" fill="none" stroke="#5b00b5" stroke-width="1.5"/>
+      <!-- Hair strands glow -->
+      <line x1="100" y1="26" x2="100" y2="18" stroke="#7b20d5" stroke-width="2"/>
+      <circle cx="100" cy="16" r="5" fill="#e040fb" filter="url(#strongGlow)"/>
+      <circle cx="100" cy="16" r="2.5" fill="#fff"/>
+      <!-- Side hair lines -->
+      <line x1="84" y1="32" x2="80" y2="22" stroke="#5b00b5" stroke-width="1" opacity="0.7"/>
+      <line x1="116" y1="32" x2="120" y2="22" stroke="#5b00b5" stroke-width="1" opacity="0.7"/>
+      <circle cx="80" cy="20" r="2.5" fill="#9b30ff" opacity="0.7" filter="url(#softGlow)"/>
+      <circle cx="120" cy="20" r="2.5" fill="#9b30ff" opacity="0.7" filter="url(#softGlow)"/>
+
+      <!-- FACE FEATURES -->
+      <!-- Brow ridge subtle glow -->
+      <path d="M70,68 C76,64 84,63 90,65" fill="none" stroke="#9b30ff" stroke-width="1" opacity="0.4"/>
+      <path d="M110,65 C116,63 124,64 130,68" fill="none" stroke="#9b30ff" stroke-width="1" opacity="0.4"/>
+
+      <!-- ═══ EYES ═══ — almond shaped, human-like -->
+      <!-- Left eye socket -->
+      <path d="M68,74 C70,70 76,68 83,70 C90,72 93,76 91,80 C89,84 82,86 75,84 C68,82 66,78 68,74 Z" fill="#080018"/>
+      <!-- Left iris ring -->
+      <ellipse cx="80" cy="77" rx="9" ry="7" fill="#0d002a"/>
+      <ellipse id="leftPupil" cx="80" cy="77" rx="6" ry="5.5" fill="#9b30ff" filter="url(#strongGlow)"/>
+      <ellipse id="leftInner" cx="80" cy="77" rx="3" ry="3" fill="#e040fb"/>
+      <ellipse cx="80" cy="77" rx="1.2" ry="1.2" fill="#fff"/>
+      <!-- Left eye specular -->
+      <ellipse cx="77" cy="74" rx="1.8" ry="1.2" fill="rgba(255,255,255,0.45)" transform="rotate(-15,77,74)"/>
+      <!-- Left eyelid lines -->
+      <path d="M68,74 C70,70 76,68 83,70 C90,72 93,76" fill="none" stroke="#7b20d5" stroke-width="0.8" opacity="0.8"/>
+
+      <!-- Right eye socket -->
+      <path d="M109,74 C107,70 114,68 120,70 C127,72 132,76 132,80 C130,84 122,86 115,84 C108,82 107,78 109,74 Z" fill="#080018"/>
+      <!-- Right iris ring -->
+      <ellipse cx="120" cy="77" rx="9" ry="7" fill="#0d002a"/>
+      <ellipse id="rightPupil" cx="120" cy="77" rx="6" ry="5.5" fill="#9b30ff" filter="url(#strongGlow)"/>
+      <ellipse id="rightInner" cx="120" cy="77" rx="3" ry="3" fill="#e040fb"/>
+      <ellipse cx="120" cy="77" rx="1.2" ry="1.2" fill="#fff"/>
+      <!-- Right eye specular -->
+      <ellipse cx="117" cy="74" rx="1.8" ry="1.2" fill="rgba(255,255,255,0.45)" transform="rotate(-15,117,74)"/>
+      <!-- Right eyelid lines -->
+      <path d="M109,74 C110,70 116,68 122,70 C128,72 132,76 132,80" fill="none" stroke="#7b20d5" stroke-width="0.8" opacity="0.8"/>
+
+      <!-- Eyelid blink group -->
+      <g id="eyeLids" style="animation: eyeBlink 5s ease-in-out infinite;">
+        <path d="M68,74 C70,70 76,68 83,70 C90,72 93,76 91,80 C89,84 82,86 75,84 C68,82 66,78 68,74 Z" fill="#1a003a" opacity="0" id="leftLid"/>
+        <path d="M109,74 C110,70 116,68 122,70 C128,72 132,76 132,80 C130,84 122,86 115,84 C108,82 107,78 109,74 Z" fill="#1a003a" opacity="0" id="rightLid"/>
+      </g>
+
+      <!-- NOSE — subtle bridge -->
+      <path d="M97,82 C96,86 94,92 92,96 C95,98 100,99 105,96 C106,92 104,86 103,82" fill="none" stroke="#5b00b5" stroke-width="0.8" opacity="0.5"/>
+      <path d="M92,96 C91,98 93,100 97,100 C101,100 106,100 108,98 C107,96 104,96 103,96" fill="#1a003a" stroke="#5b00b5" stroke-width="0.7" opacity="0.7"/>
+
+      <!-- MOUTH — slight smile -->
+      <path d="M84,107 C88,112 95,114 100,114 C105,114 112,112 116,107" fill="none" stroke="#7b20d5" stroke-width="1.2"/>
+      <!-- Lips -->
+      <path d="M86,108 C90,111 95,112 100,112 C105,112 110,111 114,108" fill="none" stroke="#9b30ff" stroke-width="0.8" opacity="0.6"/>
+      <!-- Corner mouth lights -->
+      <circle cx="84" cy="107" r="1.5" fill="#e040fb" opacity="0.6" filter="url(#softGlow)"/>
+      <circle cx="116" cy="107" r="1.5" fill="#e040fb" opacity="0.6" filter="url(#softGlow)"/>
+
+      <!-- CHIN accent -->
+      <path d="M90,116 Q100,118 110,116" fill="none" stroke="#5b00b5" stroke-width="0.6" opacity="0.4"/>
+
+      <!-- Ground glow -->
+      <ellipse cx="100" cy="370" rx="55" ry="5" fill="#9b30ff" opacity="0.15" filter="url(#glow)"/>
+    </svg>
+
+    <style>
+      @keyframes eyeBlink {
+        0%, 88%, 100% { opacity: 0; }
+        92%, 96% { opacity: 1; }
+      }
+    </style>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-header">
+    <span class="section-tag">// Who I Am</span>
+    <h2 class="section-title">About Me</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="about-grid">
+    <div class="about-text">
+      <p>I'm <strong style="color:var(--purple-glow)">V Vishal</strong>, a passionate web developer based in Tamil Nadu, India. I specialize in building clean, fast, and visually stunning websites for clients across various industries.</p>
+      <p>With hands-on experience delivering real client projects, I bring both technical precision and creative flair to every build. My focus is on writing clean code and crafting experiences that users actually enjoy.</p>
+      <p>When I'm not coding, I'm exploring new technologies and pushing the limits of what the web can do.</p>
+    </div>
+    <div>
+      <div class="edu-card">
+        <div class="edu-icon">🎓</div>
+        <div>
+          <div class="edu-title">DCSE — Diploma in Computer Science & Engineering</div>
+          <div class="edu-sub">Core foundations in computer science, programming, and systems engineering.</div>
+        </div>
+      </div>
+      <div class="edu-card">
+        <div class="edu-icon">🏛️</div>
+        <div>
+          <div class="edu-title">B.Tech — Computer Science & Engineering</div>
+          <div class="edu-sub">Advanced study in software development, algorithms, data structures, and modern web technologies.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-header">
+    <span class="section-tag">// Tech Stack</span>
+    <h2 class="section-title">My Skills</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="skills-grid">
+    <div class="skill-card"><span class="skill-icon">🌐</span><span class="skill-name">HTML5</span></div>
+    <div class="skill-card"><span class="skill-icon">🎨</span><span class="skill-name">CSS3</span></div>
+    <div class="skill-card"><span class="skill-icon">⚡</span><span class="skill-name">JavaScript</span></div>
+    <div class="skill-card"><span class="skill-icon">⚛️</span><span class="skill-name">React</span></div>
+    <div class="skill-card"><span class="skill-icon">🖥️</span><span class="skill-name">Node.js</span></div>
+    <div class="skill-card"><span class="skill-icon">🐘</span><span class="skill-name">PHP</span></div>
+    <div class="skill-card"><span class="skill-icon">🗄️</span><span class="skill-name">MySQL</span></div>
+    <div class="skill-card"><span class="skill-icon">🎯</span><span class="skill-name">Tailwind CSS</span></div>
+    <div class="skill-card"><span class="skill-icon">📦</span><span class="skill-name">WordPress</span></div>
+    <div class="skill-card"><span class="skill-icon">🔧</span><span class="skill-name">Git & GitHub</span></div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-header">
+    <span class="section-tag">// My Work</span>
+    <h2 class="section-title">Featured Projects</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-thumb" style="background:linear-gradient(135deg,#1a0040,#3d0080)">🛍️</div>
+      <div class="project-body">
+        <div class="project-tags"><span class="tag">React</span><span class="tag">Node.js</span><span class="tag">MySQL</span></div>
+        <div class="project-title">NexaBazaar — E-Commerce Platform</div>
+        <p class="project-desc">Full-stack e-commerce solution with product management, cart, payment gateway integration, and admin dashboard. Built for a local retail client in Chennai.</p>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="project-thumb" style="background:linear-gradient(135deg,#000d1a,#003d80)">🏥</div>
+      <div class="project-body">
+        <div class="project-tags"><span class="tag">PHP</span><span class="tag">MySQL</span><span class="tag">Bootstrap</span></div>
+        <div class="project-title">MedCore — Hospital Management</div>
+        <p class="project-desc">Appointment booking, patient records, billing system and doctor scheduling portal for a private clinic. Handles 500+ patient records seamlessly.</p>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="project-thumb" style="background:linear-gradient(135deg,#001a0d,#00803d)">🍽️</div>
+      <div class="project-body">
+        <div class="project-tags"><span class="tag">WordPress</span><span class="tag">CSS3</span><span class="tag">JS</span></div>
+        <div class="project-title">SpicyRoots — Restaurant Website</div>
+        <p class="project-desc">Stunning restaurant landing page with online menu, reservation system and Google Maps integration. Boosted customer footfall by 40% after launch.</p>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="project-thumb" style="background:linear-gradient(135deg,#1a1000,#805000)">🏗️</div>
+      <div class="project-body">
+        <div class="project-tags"><span class="tag">React</span><span class="tag">Tailwind</span><span class="tag">Firebase</span></div>
+        <div class="project-title">BuildSmart — Construction Portal</div>
+        <p class="project-desc">Project management and lead generation portal for a construction firm. Features real-time project tracking, quote calculator, and client dashboard.</p>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="project-thumb" style="background:linear-gradient(135deg,#1a000d,#800040)">💆</div>
+      <div class="project-body">
+        <div class="project-tags"><span class="tag">HTML/CSS</span><span class="tag">JS</span><span class="tag">PHP</span></div>
+        <div class="project-title">ZenSpace — Wellness Booking App</div>
+        <p class="project-desc">Yoga and wellness studio booking system with class schedules, membership plans, instructor profiles and integrated payment flow.</p>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="project-thumb" style="background:linear-gradient(135deg,#000a1a,#002080)">📚</div>
+      <div class="project-body">
+        <div class="project-tags"><span class="tag">React</span><span class="tag">Node.js</span><span class="tag">MongoDB</span></div>
+        <div class="project-title">EduNova — Learning Platform</div>
+        <p class="project-desc">Online learning platform with video courses, quizzes, progress tracking and certificate generation. Serving 200+ active student users.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CLIENTS -->
+<section id="clients">
+  <div class="section-header">
+    <span class="section-tag">// Testimonials</span>
+    <h2 class="section-title">Happy Clients</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="clients-grid">
+    <div class="client-card"><div class="client-avatar">👨‍💼</div><div class="client-name">Arjun Mehta</div><div class="client-company">NexaBazaar, Chennai</div><div class="stars">★★★★★</div><p class="client-review">"Vishal delivered our e-commerce platform ahead of schedule. The quality and attention to detail was outstanding. Highly recommended!"</p></div>
+    <div class="client-card"><div class="client-avatar">👩‍⚕️</div><div class="client-name">Dr. Priya Sundaram</div><div class="client-company">MedCore Clinic, Trichy</div><div class="stars">★★★★★</div><p class="client-review">"Our hospital management system works flawlessly. Vishal understood every requirement and executed it perfectly. Great communication throughout."</p></div>
+    <div class="client-card"><div class="client-avatar">🍛</div><div class="client-name">Ramesh Krishnan</div><div class="client-company">SpicyRoots Restaurant, Coimbatore</div><div class="stars">★★★★★</div><p class="client-review">"Our website looks amazing and customers love the online reservation feature. Business has grown significantly since the new website launched."</p></div>
+    <div class="client-card"><div class="client-avatar">🏗️</div><div class="client-name">Karthik Narayanan</div><div class="client-company">BuildSmart Constructions</div><div class="stars">★★★★★</div><p class="client-review">"Professional, fast, and very talented. The construction portal has helped us manage projects efficiently and win more clients. 10/10!"</p></div>
+    <div class="client-card"><div class="client-avatar">🧘</div><div class="client-name">Meena Lakshmi</div><div class="client-company">ZenSpace Wellness, Madurai</div><div class="stars">★★★★★</div><p class="client-review">"The booking system Vishal built for us is seamless. Our members love how easy it is to book classes. Would work with him again without hesitation."</p></div>
+    <div class="client-card"><div class="client-avatar">📖</div><div class="client-name">Suresh Babu</div><div class="client-company">EduNova Academy, Bangalore</div><div class="stars">★★★★★</div><p class="client-review">"An exceptional developer who goes above and beyond. Our e-learning platform handles hundreds of students smoothly. Truly impressive work!"</p></div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-header">
+    <span class="section-tag">// Get In Touch</span>
+    <h2 class="section-title">Contact Me</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="contact-inner">
+    <p>Have a project in mind? Let's build something extraordinary together. I'm available for freelance projects and open to exciting opportunities.</p>
+    <button class="btn-primary" onclick="showContactForm()">Send Message →</button>
+  </div>
+</section>
+
+<footer>
+  <p>Designed & Built by <span>V VISHAL</span> &nbsp;|&nbsp; © 2025 All Rights Reserved</p>
+</footer>
+</div><!-- /mainSite -->
+
+
+<!-- ===== CONTACT FORM PAGE ===== -->
+<div class="overlay-page" id="contactPage">
+  <div class="contact-form-wrap">
+    <button class="back-btn" onclick="hideContactForm()">← Back to Portfolio</button>
+    <div class="form-title">Let's Connect</div>
+    <p class="form-sub">Fill in your details below. Name is required, and please provide at least one contact method (phone or email).</p>
+    <div id="contactFormContent">
+      <div class="form-group">
+        <label>Your Name <span style="color:var(--purple-neon)">*</span></label>
+        <input type="text" id="cf-name" placeholder="Enter your full name" />
+      </div>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" id="cf-phone" placeholder="+91 98765 43210" />
+      </div>
+      <div class="form-or">— OR —</div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="cf-email" placeholder="you@example.com" />
+      </div>
+      <p class="form-note"><span>*</span> Name required. Provide phone OR email (at least one).</p>
+      <div class="field-error" id="cf-error">Please fill in your name and at least a phone number or email.</div>
+      <button class="btn-primary" style="width:100%;text-align:center;border:none;" onclick="submitContact()">Submit →</button>
+    </div>
+    <div class="form-success" id="contactSuccess">
+      <div class="success-icon">✅</div>
+      <h3>Message Received!</h3>
+      <p style="color:var(--text-dim);margin-top:0.5rem;">Thank you for reaching out. Vishal will get back to you shortly.</p>
+      <button class="btn-outline" style="margin-top:1.5rem;" onclick="hideContactForm()">Back to Portfolio</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===== ADMIN LOGIN PAGE ===== -->
+<div class="overlay-page" id="adminLoginPage">
+  <div class="admin-login-wrap">
+    <div class="admin-header">
+      <div class="admin-badge">⚙ Admin Access</div>
+      <div class="admin-login-title">Admin Login</div>
+      <p class="admin-login-sub">Restricted area — authorized personnel only</p>
+    </div>
+    <div class="login-card">
+      <div class="field-error" id="loginError">Invalid username or password. Try again.</div>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="adminUser" placeholder="Enter username" autocomplete="off" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="adminPass" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()" />
+      </div>
+      <button class="login-btn" onclick="doLogin()">Access Dashboard →</button>
+      <button class="login-back" onclick="hideAdminLogin()">← Return to Portfolio</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===== ADMIN DASHBOARD ===== -->
+<div id="adminDashboard">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-topbar-logo">V·VISHAL</div>
+      <div class="admin-topbar-tag">Admin Dashboard</div>
+    </div>
+    <button class="admin-logout-btn" onclick="doLogout()">⏻ Logout</button>
+  </div>
+  <div class="admin-body">
+    <div class="admin-stats-row">
+      <div class="admin-stat-card"><span class="admin-stat-val" id="statTotal">0</span><span class="admin-stat-lbl">Total Inquiries</span></div>
+      <div class="admin-stat-card"><span class="admin-stat-val" id="statPhone">0</span><span class="admin-stat-lbl">Phone Contacts</span></div>
+      <div class="admin-stat-card"><span class="admin-stat-val" id="statEmail">0</span><span class="admin-stat-lbl">Email Contacts</span></div>
+    </div>
+    <div class="admin-section-title">Client Inquiries</div>
+    <button class="clear-all-btn" onclick="clearAllContacts()">🗑 Clear All</button>
+    <div class="contacts-table-wrap"><div id="contactsTableContainer"></div></div>
+  </div>
+</div>
+
+
+<script>
+  // ===== CURSOR =====
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
+    ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px';
+    trackRobot(e);
+  });
+  document.querySelectorAll('a,button,.project-card,.skill-card,.client-card').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.style.transform='translate(-50%,-50%) scale(1.8)'; ring.style.transform='translate(-50%,-50%) scale(1.3)'; ring.style.borderColor='var(--purple-neon)'; });
+    el.addEventListener('mouseleave', () => { cursor.style.transform='translate(-50%,-50%) scale(1)'; ring.style.transform='translate(-50%,-50%) scale(1)'; ring.style.borderColor='var(--purple-glow)'; });
+  });
+
+  // ===== ROBOT EYE TRACKING =====
+  function trackRobot(e) {
+    const robot = document.getElementById('robot');
+    if (!robot || !robot.getBoundingClientRect) return;
+    const rect = robot.getBoundingClientRect();
+    const headCX = rect.left + rect.width * 0.5;
+    const headCY = rect.top + rect.height * 0.2;
+    const dx = e.clientX - headCX, dy = e.clientY - headCY;
+    const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+    const maxTilt = 7;
+    const aX = Math.max(-maxTilt, Math.min(maxTilt, (dy/window.innerHeight)*maxTilt*2));
+    const aY = Math.max(-maxTilt, Math.min(maxTilt, (dx/window.innerWidth)*maxTilt*2));
+    robot.style.transform = `rotateX(${-aX*0.5}deg) rotateY(${aY}deg)`;
+    const maxMove = 3, norm = Math.min(dist,400)/400;
+    const ex = (dx/dist)*maxMove*norm, ey = (dy/dist)*maxMove*norm;
+    const lp=document.getElementById('leftPupil'), li=document.getElementById('leftInner');
+    const rp=document.getElementById('rightPupil'), ri=document.getElementById('rightInner');
+    if(lp){lp.setAttribute('cx',80+ex);lp.setAttribute('cy',77+ey);}
+    if(li){li.setAttribute('cx',80+ex);li.setAttribute('cy',77+ey);}
+    if(rp){rp.setAttribute('cx',120+ex);rp.setAttribute('cy',77+ey);}
+    if(ri){ri.setAttribute('cx',120+ex);ri.setAttribute('cy',77+ey);}
+  }
+
+  // ===== SCROLL REVEAL =====
+  const reveals = document.querySelectorAll('.project-card,.skill-card,.client-card,.edu-card');
+  reveals.forEach(el => { el.style.opacity='0'; el.style.transform='translateY(28px)'; el.style.transition='opacity 0.5s ease, transform 0.5s ease'; });
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach((entry,i) => {
+      if(entry.isIntersecting){
+        setTimeout(() => { entry.target.style.opacity='1'; entry.target.style.transform='translateY(0)'; }, (i%4)*80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {threshold:0.12});
+  reveals.forEach(el => observer.observe(el));
+
+  // ===== HAMBURGER MENU =====
+  function toggleHamMenu() {
+    document.getElementById('hamMenu').classList.toggle('open');
+  }
+  function closeHamMenu() {
+    document.getElementById('hamMenu').classList.remove('open');
+  }
+  document.addEventListener('click', e => {
+    const wrap = document.querySelector('.hamburger-wrap');
+    if (wrap && !wrap.contains(e.target)) closeHamMenu();
+  });
+
+  // ===== CONTACT FORM =====
+  function showContactForm() {
+    document.getElementById('contactPage').classList.add('active');
+    document.getElementById('contactFormContent').style.display = 'block';
+    document.getElementById('contactSuccess').style.display = 'none';
+    document.getElementById('cf-name').value = '';
+    document.getElementById('cf-phone').value = '';
+    document.getElementById('cf-email').value = '';
+    document.getElementById('cf-error').style.display = 'none';
+    document.body.style.overflow = 'hidden';
+  }
+  function hideContactForm() {
+    document.getElementById('contactPage').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  function submitContact() {
+    const name = document.getElementById('cf-name').value.trim();
+    const phone = document.getElementById('cf-phone').value.trim();
+    const email = document.getElementById('cf-email').value.trim();
+    const err = document.getElementById('cf-error');
+    if (!name || (!phone && !email)) { err.style.display = 'block'; return; }
+    err.style.display = 'none';
+    const contacts = getContacts();
+    contacts.push({ id: Date.now(), name, phone, email, time: new Date().toLocaleString() });
+    saveContacts(contacts);
+    document.getElementById('contactFormContent').style.display = 'none';
+    document.getElementById('contactSuccess').style.display = 'block';
+  }
+
+  // ===== ADMIN LOGIN =====
+  const ADMIN_USER = 'VISHAL9585', ADMIN_PASS = 'WARLORD2M';
+  function showAdminLogin() {
+    document.getElementById('adminLoginPage').classList.add('active');
+    document.getElementById('adminUser').value = '';
+    document.getElementById('adminPass').value = '';
+    document.getElementById('loginError').style.display = 'none';
+    document.body.style.overflow = 'hidden';
+  }
+  function hideAdminLogin() {
+    document.getElementById('adminLoginPage').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  function doLogin() {
+    const u = document.getElementById('adminUser').value.trim();
+    const p = document.getElementById('adminPass').value;
+    if (u === ADMIN_USER && p === ADMIN_PASS) {
+      hideAdminLogin();
+      openDashboard();
+    } else {
+      document.getElementById('loginError').style.display = 'block';
+    }
+  }
+  function doLogout() {
+    document.getElementById('adminDashboard').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  // ===== DASHBOARD =====
+  function openDashboard() {
+    document.getElementById('adminDashboard').classList.add('active');
+    document.body.style.overflow = 'auto';
+    renderDashboard();
+  }
+  function getContacts() {
+    try { return JSON.parse(localStorage.getItem('vishal_contacts') || '[]'); } catch { return []; }
+  }
+  function saveContacts(c) {
+    localStorage.setItem('vishal_contacts', JSON.stringify(c));
+  }
+  function renderDashboard() {
+    const contacts = getContacts();
+    document.getElementById('statTotal').textContent = contacts.length;
+    document.getElementById('statPhone').textContent = contacts.filter(c=>c.phone).length;
+    document.getElementById('statEmail').textContent = contacts.filter(c=>c.email).length;
+    const container = document.getElementById('contactsTableContainer');
+    if (!contacts.length) {
+      container.innerHTML = `<div class="no-contacts"><div class="nc-icon">📭</div><p>No inquiries yet</p></div>`;
+      return;
+    }
+    container.innerHTML = `
+      <table class="contacts-table">
+        <thead><tr>
+          <th>#</th><th>Name</th><th>Phone</th><th>Email</th><th>Time</th><th>Action</th>
+        </tr></thead>
+        <tbody>
+          ${contacts.map((c,i) => `
+            <tr>
+              <td style="color:var(--text-dim);opacity:0.6">${i+1}</td>
+              <td class="contact-row-name">${escHtml(c.name)}</td>
+              <td>${c.phone ? `<span class="contact-row-badge phone">📱 ${escHtml(c.phone)}</span>` : '<span style="opacity:0.3">—</span>'}</td>
+              <td>${c.email ? `<span class="contact-row-badge">✉ ${escHtml(c.email)}</span>` : '<span style="opacity:0.3">—</span>'}</td>
+              <td class="contact-time">${escHtml(c.time)}</td>
+              <td><button class="delete-btn" onclick="deleteContact(${c.id})">Delete</button></td>
+            </tr>`).join('')}
+        </tbody>
+      </table>`;
+  }
+  function deleteContact(id) {
+    saveContacts(getContacts().filter(c => c.id !== id));
+    renderDashboard();
+  }
+  function clearAllContacts() {
+    if (confirm('Delete all inquiries?')) { saveContacts([]); renderDashboard(); }
+  }
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+</script>
+</body>
+</html>
